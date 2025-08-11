@@ -258,11 +258,33 @@ const MessageBubble = ({
   const isUser = message.sender === "user";
   const [isHovered, setIsHovered] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [hasSpoken, setHasSpoken] = useState(false);
   
-  // Speak the message text with mood-based voice when it's a NAVI message and not loading
+  // Manual voice playback function
+  const playVoice = () => {
+    if (!isUser && !message.isLoading && message.text && isSoundEnabled) {
+      setIsPlaying(true);
+      
+      // Get previous message texts for context
+      const recentMessages = previousMessages.slice(-3);
+      
+      // Use mood-based TTS with ElevenLabs (completely non-blocking)
+      speakTextWithMood(message.text, mood.id, recentMessages)
+        .then(() => {
+          setIsPlaying(false);
+          setHasSpoken(true);
+        })
+        .catch((error: any) => {
+          console.warn('TTS failed, continuing silently:', error);
+          setIsPlaying(false);
+        });
+    }
+  };
+
+  // Auto-play voice ONLY ONCE for new messages (not the welcome message)
   useEffect(() => {
-    // Skip TTS for the initial welcome message and only enable for new messages
-    if (!isUser && !message.isLoading && message.text && isSoundEnabled && message.id !== "1") {
+    // Only auto-play for new NAVI messages, not the initial welcome message, and only if not already spoken
+    if (!isUser && !message.isLoading && message.text && isSoundEnabled && message.id !== "1" && !hasSpoken) {
       // Use requestIdleCallback for better performance, fallback to setTimeout
       const scheduleVoice = (callback: () => void) => {
         if ('requestIdleCallback' in window) {
@@ -273,26 +295,13 @@ const MessageBubble = ({
       };
 
       scheduleVoice(() => {
-        // Double-check conditions before proceeding
-        if (!isUser && !message.isLoading && message.text && isSoundEnabled && message.id !== "1") {
-          setIsPlaying(true);
-          
-          // Get previous message texts for context
-          const recentMessages = previousMessages.slice(-3);
-          
-          // Use mood-based TTS with ElevenLabs (completely non-blocking)
-          speakTextWithMood(message.text, mood.id, recentMessages)
-            .then(() => {
-              setIsPlaying(false);
-            })
-            .catch((error: any) => {
-              console.warn('TTS failed, continuing silently:', error);
-              setIsPlaying(false);
-            });
+        // Double-check conditions before proceeding and ensure it hasn't been spoken yet
+        if (!isUser && !message.isLoading && message.text && isSoundEnabled && message.id !== "1" && !hasSpoken) {
+          playVoice();
         }
       });
     }
-  }, [message.text, isUser, message.isLoading, isSoundEnabled, mood.id, previousMessages, message.id]);
+  }, [message.text, isUser, message.isLoading, isSoundEnabled, message.id, hasSpoken]);
   
   return (
     <motion.div
@@ -358,32 +367,43 @@ const MessageBubble = ({
             </div>
             {!isUser && !message.isLoading && (
               <div className="flex items-center space-x-2">
-                {/* Voice playing indicator */}
-                {isPlaying && (
-                  <motion.div
-                    className="flex space-x-0.5"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                  >
-                    {[0, 1, 2].map((i) => (
-                      <motion.div
-                        key={i}
-                        className="w-0.5 h-2 rounded-full"
-                        style={{ backgroundColor: mood.color }}
-                        animate={{
-                          height: [2, 6, 2],
-                          opacity: [0.4, 1, 0.4]
-                        }}
-                        transition={{
-                          duration: 0.8,
-                          repeat: Infinity,
-                          delay: i * 0.1
-                        }}
-                      />
-                    ))}
-                  </motion.div>
-                )}
+                {/* Manual voice replay button */}
+                <motion.button
+                  onClick={playVoice}
+                  disabled={isPlaying}
+                  className="p-1 rounded-full hover:bg-accent/20 transition-colors disabled:opacity-50"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  title="Play voice"
+                >
+                  {isPlaying ? (
+                    <motion.div
+                      className="flex space-x-0.5"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      {[0, 1, 2].map((i) => (
+                        <motion.div
+                          key={i}
+                          className="w-0.5 h-2 rounded-full"
+                          style={{ backgroundColor: mood.color }}
+                          animate={{
+                            height: [2, 6, 2],
+                            opacity: [0.4, 1, 0.4]
+                          }}
+                          transition={{
+                            duration: 0.8,
+                            repeat: Infinity,
+                            delay: i * 0.1
+                          }}
+                        />
+                      ))}
+                    </motion.div>
+                  ) : (
+                    <Volume2 className="w-3 h-3" style={{ color: mood.color }} />
+                  )}
+                </motion.button>
                 
                 {/* Mood indicator */}
                 <motion.div
