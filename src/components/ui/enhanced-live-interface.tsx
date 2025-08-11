@@ -45,14 +45,14 @@ const NeuralParticle = ({ delay, mood }: { delay: number; mood: MoodState }) => 
         background: `radial-gradient(circle, ${baseColor}80, transparent)`,
         boxShadow: `0 0 ${2 + intensity}px ${baseColor}`,
       }}
-      initial={{ 
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * window.innerHeight,
+      initial={{
+        x: typeof window !== 'undefined' ? Math.random() * window.innerWidth : 0,
+        y: typeof window !== 'undefined' ? Math.random() * window.innerHeight : 0,
         scale: 0
       }}
       animate={{
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * window.innerHeight,
+        x: typeof window !== 'undefined' ? Math.random() * window.innerWidth : 0,
+        y: typeof window !== 'undefined' ? Math.random() * window.innerHeight : 0,
         scale: [0, 1, 0],
         opacity: [0, intensity * 0.8, 0]
       }}

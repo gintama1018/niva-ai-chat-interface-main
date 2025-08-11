@@ -52,8 +52,8 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
     for (let i = 0; i < 50; i++) {
       newParticles.push({
         id: i,
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * window.innerHeight,
+        x: typeof window !== 'undefined' ? Math.random() * window.innerWidth : 0,
+        y: typeof window !== 'undefined' ? Math.random() * window.innerHeight : 0,
         vx: (Math.random() - 0.5) * 0.5,
         vy: (Math.random() - 0.5) * 0.5,
         size: Math.random() * 3 + 1,
@@ -67,7 +67,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   useEffect(() => {
     const newNodes: Node[] = [];
     for (let i = 0; i < 20; i++) {
-      const connections = [];
+      const connections: number[] = [];
       const numConnections = Math.floor(Math.random() * 3) + 1;
       for (let j = 0; j < numConnections; j++) {
         const connectionId = Math.floor(Math.random() * 20);
@@ -77,8 +77,8 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
       }
       newNodes.push({
         id: i,
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * window.innerHeight,
+        x: typeof window !== 'undefined' ? Math.random() * window.innerWidth : 0,
+        y: typeof window !== 'undefined' ? Math.random() * window.innerHeight : 0,
         connections,
         active: Math.random() > 0.5
       });

@@ -59,6 +59,7 @@ export default function Hero3DAvatar() {
     if (!ctx) return
 
     const resizeCanvas = () => {
+      if (typeof window === 'undefined') return
       canvas.width = window.innerWidth
       canvas.height = window.innerHeight
     }
@@ -170,6 +171,7 @@ export default function Hero3DAvatar() {
   // Mouse tracking for parallax
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
+      if (typeof window === 'undefined') return
       const x = (e.clientX - window.innerWidth / 2) / 50
       const y = (e.clientY - window.innerHeight / 2) / 50
       mouseX.set(x)

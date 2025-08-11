@@ -1,4 +1,14 @@
-import { GoogleGenerativeAI, Content, Part } from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+// Define types locally if they're not exported
+interface Content {
+  role: "user" | "model";
+  parts: Part[];
+}
+
+interface Part {
+  text: string;
+}
 
 // Initialize the Gemini API client with your API key
 const genAI = new GoogleGenerativeAI("AIzaSyBHqaN8vEFyqnf1GtZPYBbG884wsgEf3C0");

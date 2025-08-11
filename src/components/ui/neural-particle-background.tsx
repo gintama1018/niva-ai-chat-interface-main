@@ -21,13 +21,16 @@ interface Connection {
 
 export default function NeuralParticleBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animationIdRef = useRef<number>()
+  const animationIdRef = useRef<number | undefined>(undefined)
   const particlesRef = useRef<Particle[]>([])
   const connectionsRef = useRef<Connection[]>([])
   const scrollYRef = useRef(0)
 
   // Performance-optimized particle pool
   const createParticlePool = useCallback((count: number, width: number, height: number): Particle[] => {
+    // Check if we're in a browser environment
+    if (typeof window === 'undefined') return []
+    
     const particles: Particle[] = []
     const colors = ['#c0c0c0', '#3b82f6']
     
