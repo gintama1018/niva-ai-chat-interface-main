@@ -39,7 +39,7 @@ export default function Hero3DAvatar() {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
   const [currentCapability, setCurrentCapability] = useState(0)
   const particles = useRef<Particle[]>([])
-  const animationId = useRef<number>()
+  const animationId = useRef<number | undefined>(undefined)
 
   const { scrollY } = useScroll()
   const y = useTransform(scrollY, [0, 500], [0, -100])

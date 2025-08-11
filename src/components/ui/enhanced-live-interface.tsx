@@ -119,6 +119,8 @@ const NAVIAvatar = ({ mood, isListening, isSpeaking, isActive }: {
             style={{
               background: `radial-gradient(circle, ${mood.color}, transparent)`,
               boxShadow: `0 0 8px ${mood.color}`,
+              left: `${50 + 45 * Math.cos((i * 30 * Math.PI) / 180)}%`,
+              top: `${50 + 45 * Math.sin((i * 30 * Math.PI) / 180)}%`,
             }}
             animate={{
               rotate: 360,
@@ -135,10 +137,6 @@ const NAVIAvatar = ({ mood, isListening, isSpeaking, isActive }: {
                 repeat: Infinity,
                 ease: "easeInOut"
               }
-            }}
-            style={{
-              left: `${50 + 45 * Math.cos((i * 30 * Math.PI) / 180)}%`,
-              top: `${50 + 45 * Math.sin((i * 30 * Math.PI) / 180)}%`,
             }}
           />
         ))}
